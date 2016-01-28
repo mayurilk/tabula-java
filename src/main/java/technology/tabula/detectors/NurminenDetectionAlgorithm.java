@@ -8,6 +8,7 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.util.PDFOperator;
 import technology.tabula.*;
 import technology.tabula.Rectangle;
+import technology.tabula.debug.Debug;
 import technology.tabula.extractors.SpreadsheetExtractionAlgorithm;
 
 import java.awt.geom.Line2D;
@@ -135,6 +136,8 @@ public class NurminenDetectionAlgorithm implements DetectionAlgorithm {
 
             // use the rulings and points to find cells
             List<? extends Rectangle> cells = SpreadsheetExtractionAlgorithm.findCells(horizontalRulings, verticalRulings);
+
+            Debug.debugPage(page, cells);
 
             // then use those cells to make table areas
             tableAreas = this.getTableAreasFromCells(cells);

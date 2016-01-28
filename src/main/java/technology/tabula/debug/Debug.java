@@ -11,10 +11,12 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.sun.corba.se.impl.orbutil.graph.Graph;
 import technology.tabula.Cell;
 import technology.tabula.CommandLineApp;
 import technology.tabula.Line;
@@ -213,6 +215,32 @@ public class Debug {
         g.draw(shape);
     }
 
+    /**
+     * Helper method for internal code for debugging arbitrary shapes on a page. The output filename follows the
+     * command line output format.
+     * @param p The page to draw
+     * @param shapes The shapes to overlay on the page
+     */
+    public static void debugPage(Page p, Collection<? extends Shape> shapes) {
+        try {
+            PDPage pdfPage = p.getPDPage();
+            String jpgFilename = "debugOut.jpg";
+
+            BufferedImage image = pdfPage.convertToImage(BufferedImage.TYPE_INT_RGB, 144);
+
+            Graphics2D g = (Graphics2D) image.getGraphics();
+
+            drawShapes(g, shapes);
+
+            ImageIOUtil.writeImage(image, jpgFilename, 144);
+        } catch (IOException ioe) {
+        }
+    }
+
+    private static BufferedImage imageFromPage(PDPage p) throws IOException {
+        return p.convertToImage(BufferedImage.TYPE_INT_RGB, 72);
+    }
+
     public static void renderPage(String pdfPath, String outPath, int pageNumber, Rectangle area,
             boolean drawTextChunks, boolean drawSpreadsheets, boolean drawRulings, boolean drawIntersections,
             boolean drawColumns, boolean drawCharacters, boolean drawArea, boolean drawCells, 
@@ -233,7 +261,7 @@ public class Debug {
 //        PDFRenderer renderer = new PDFRenderer(document);
 //        BufferedImage image = renderer.renderImage(pageNumber);
         
-        BufferedImage image = p.convertToImage(BufferedImage.TYPE_INT_RGB, 72);
+        BufferedImage image = imageFromPage(p);
         
         Graphics2D g = (Graphics2D) image.getGraphics();
         
